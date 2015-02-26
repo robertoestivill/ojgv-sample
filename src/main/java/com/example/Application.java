@@ -22,7 +22,7 @@ public class Application extends Verticle {
                 for (Map.Entry<String, String> entry : req.headers()) {
                     System.out.println(entry.getKey() + ":" + entry.getValue());
                 }
-                String gear = System.getenv("OPENSHIFT_GEAR_NAME");
+                String gear = System.getenv("OPENSHIFT_GEAR_UUID");
                 req.response().headers().set("Content-Type", "text/html; charset=UTF-8");
                 req.response().end("<html><body><h1>Hello Vert.x from gear " + gear + " !</h1></body></html>");
             }
