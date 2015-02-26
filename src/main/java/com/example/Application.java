@@ -24,7 +24,7 @@ public class Application extends Verticle {
                 }
                 String gear = System.getenv("OPENSHIFT_GEAR_UUID");
                 req.response().headers().set("Content-Type", "text/html; charset=UTF-8");
-                req.response().end("<html><body><h1>Hello Vert.x from gear " + gear + " !</h1></body></html>");
+                req.response().end("<html><body><h1>Hello Vert.x from gear " + gear + ":)</h1></body></html>");
             }
         }).listen(port, ip);
     }
