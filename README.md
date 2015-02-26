@@ -1,3 +1,2 @@
-For more details about this cartridge please visit:
- 
-https://github.com/vert-x/openshift-cartridge
+# openshift-jenkins-gradle-vertx-sample
+Continous deployment build chain and configuration for Vertx application
