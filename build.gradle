@@ -1,0 +1,72 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "io.vertx:vertx-core:$VERTX_VERSION"
+        classpath "io.vertx:vertx-platform:$VERTX_VERSION"
+        classpath "io.vertx:vertx-hazelcast:$VERTX_VERSION"
+        classpath files(['src/main/resources'])
+    }
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+project.ext.moduleName = "$MODULE_OWNER~$MODULE_NAME~$MODULE_VERSION"
+
+defaultTasks 'copyMod'
+
+configurations {
+    provided
+    testCompile.extendsFrom provided
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    provided "io.vertx:vertx-core:$VERTX_VERSION"
+    provided "io.vertx:vertx-platform:$VERTX_VERSION"
+    
+    compile "org.jsoup:jsoup:1.7.3"  
+
+    testCompile "junit:junit:$JUNIT_VERSION"
+    testCompile "io.vertx:testtools:$VERTX_TOOLS_VERSION"
+}
+
+sourceSets {
+    main {
+        compileClasspath = compileClasspath + configurations.provided
+    }
+}
+
+task copyMod(type: Copy, dependsOn: 'classes', description: 'Assemble the module into the local mods directory') {
+    into "mods/$moduleName"
+    from compileJava
+    from 'src/main/resources'
+    into('lib') {
+        from configurations.compile
+    }
+}
+
+task runMod(dependsOn: copyMod, description: 'Run the module using all the build dependencies') << {
+    System.setProperty("vertx.mods", "mods")
+    def args = ['runmod', moduleName]
+    org.vertx.java.platform.impl.cli.Starter.main(args as String[])
+}
+
+// Map the 'provided' dependency configuration to the appropriate IDEA visibility scopes.
+plugins.withType(IdeaPlugin) {
+    idea {
+        module {
+            scopes.PROVIDED.plus += configurations.provided
+            scopes.COMPILE.minus += configurations.provided
+            scopes.TEST.minus += configurations.provided
+            scopes.RUNTIME.minus += configurations.provided
+        }
+    }
+}
